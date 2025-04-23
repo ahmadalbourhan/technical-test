@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, render_template
 import json
 import os
 
@@ -44,6 +44,10 @@ def link_student():
             break
     write_json(STUDENTS_FILE, students)
     return jsonify({"message": "Student linked to university."})
+
+@app.route("/")
+def home():
+    return render_template("index.html")
 
 if __name__ == "__main__":
     app.run(debug=True)
