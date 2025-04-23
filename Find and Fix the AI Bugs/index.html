@@ -1,0 +1,48 @@
+<html>
+  <head>
+    <title>Student Page</title>
+  </head>
+  <body>
+    <!-- Bug 1: <h1> opened but </h2> closed -->
+    <!-- <h1>Students List</h2> -->
+    <!-- Fixed: correct the mismatched heading tags -->
+    <h1>Students List</h1>
+    <ul id="studentList">
+      <li>Ali</li>
+      <li>Maya</li>
+    </ul>
+    <input type="text" id="name" />
+    <button onclick="addStudent()">Add</button>
+    <script>
+      function addStudent() {
+        // Bug 2: script looked for "Name" but input ID was "name"
+        // let name = document.getElementById("Name").value;
+        // Fixed: correct the case sensitivity
+        let name = document.getElementById("name").value;
+
+        // Bug 5: Input validation and clear input field
+        // Fixed: Added trim check and validation
+        if (name.trim() === "") {
+          alert("Please enter a valid name.");
+          return;
+        }
+
+        // Bug 4: Improper list item addition
+        // studentList.appendChild("<li>" + name + "</li>");
+
+        // Fixed: Created proper li element
+        const li = document.createElement("li");
+        li.textContent = name;
+        document.getElementById("studentList").appendChild(li);
+
+        // Fixed: Clear input field (related to the bug 5)
+        document.getElementById("name").value = "";
+
+        //Bug 3: Missing string concatenation
+        // alert('Student ' + name ' added');
+        // Fixed: Added proper concatenation
+        alert("Student " + name + " added");
+      }
+    </script>
+  </body>
+</html>
