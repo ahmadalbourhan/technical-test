@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>University System</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <h1>Student-University System</h1>
+
+  <section>
+    <h2>Add New Student</h2>
+    <input type="text" id="studentName" placeholder="Enter student name">
+    <button onclick="addStudent()">Add Student</button>
+  </section>
+
+  <section>
+    <h2>Link Student to University</h2>
+    <select id="studentSelect"></select>
+    <select id="universitySelect"></select>
+    <button onclick="linkStudent()">Link</button>
+  </section>
+
+  <section>
+    <h2>Students List</h2>
+    <ul id="studentsList"></ul>
+  </section>
+
+  <script>
+    async function fetchStudents() {
+      const res = await fetch("/students");
+      const students = await res.json();
+      const uniRes = await fetch("/universities");
+      const universities = await uniRes.json();
+
+      const list = document.getElementById("studentsList");
+      const studentSelect = document.getElementById("studentSelect");
+      list.innerHTML = "";
+      studentSelect.innerHTML = "";
+
+      students.forEach(s => {
+        const uni = universities.find(u => u.id === s.university_id);
+        const name = uni ? `${s.name} → ${uni.name}` : s.name;
+        list.innerHTML += `<li>${name}</li>`;
+        studentSelect.innerHTML += `<option value="${s.id}">${s.name}</option>`;
+      });
+    }
+
+    async function fetchUniversities() {
+      const res = await fetch("/universities");
+      const universities = await res.json();
+      const select = document.getElementById("universitySelect");
+      select.innerHTML = "";
+      universities.forEach(u => {
+        select.innerHTML += `<option value="${u.id}">${u.name}</option>`;
+      });
+    }
+
+    async function addStudent() {
+      const name = document.getElementById("studentName").value;
+      if (!name) return alert("Please enter a name");
+      await fetch("/students", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({ name })
+      });
+      document.getElementById("studentName").value = "";
+      await fetchStudents();
+    }
+
+    async function linkStudent() {
+      const studentId = parseInt(document.getElementById("studentSelect").value);
+      const universityId = parseInt(document.getElementById("universitySelect").value);
+      await fetch("/link-student", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({ student_id: studentId, university_id: universityId })
+      });
+      await fetchStudents();
+    }
+
+    fetchUniversities();
+    fetchStudents();
+  </script>
+</body>
+</html>
